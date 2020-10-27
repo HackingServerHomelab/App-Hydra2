@@ -12,14 +12,13 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Chicago
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    hostname: nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ../Config/nginx.conf:/etc/nginx/nginx.conf
-      - ../Data/nginx:/etc/ssl/private
+    labels:
+      # Traefik Labels
+      - "traefik.enable=true"
+      # HTTPS Labels
+      - "traefik.http.routers.hydra2.rule=Host(`localhost`)" # Domain Name
+      - "traefik.http.routers.hydra2.entrypoints=web-secure"
+      - "traefik.http.routers.hydra2.middlewares=default-headers@file"
+      - "traefik.http.routers.hydra2.service=hydra2"
+      - "traefik.http.routers.hydra2.tls=true"
+      - "traefik.http.services.hydra2.loadbalancer.server.port=5076" # Proxied Port
